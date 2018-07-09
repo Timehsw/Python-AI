@@ -6,6 +6,13 @@
 
 import tensorflow as tf
 
-hello = tf.constant('Hello, TensorFlow!')
-sess = tf.Session()
-print(sess.run(hello))
+import numpy as np
+
+a = tf.placeholder(tf.int32)
+b = tf.placeholder(tf.int32)
+
+# c=tf.add(a,b)
+c = tf.multiply(a, b)
+with tf.Session() as session:
+    res = session.run(c, feed_dict={a: 2, b: 5})
+    print(res)
