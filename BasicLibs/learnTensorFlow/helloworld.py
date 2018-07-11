@@ -8,11 +8,11 @@ import tensorflow as tf
 
 import numpy as np
 
-a = tf.placeholder(tf.int32)
-b = tf.placeholder(tf.int32)
-
+aa = tf.random_uniform((2,2), 0, 0.5)
+print(aa)
+# a = tf.Variable(initial_value=tf.random_uniform([1],-1.0,1.0),name='w')
 # c=tf.add(a,b)
-c = tf.multiply(a, b)
+# c = tf.multiply(a, b)
 with tf.Session() as session:
-    res = session.run(c, feed_dict={a: 2, b: 5})
+    res = session.run(aa)
     print(res)
