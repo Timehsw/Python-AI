@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
     Created by hushiwei on 2018/5/28
-    Desc : 波士顿房屋租赁价格预测
+    Desc : 波士顿房屋租赁价格预测.L1和L2的运用,交叉验证的运用
 '''
 
 import numpy as np
