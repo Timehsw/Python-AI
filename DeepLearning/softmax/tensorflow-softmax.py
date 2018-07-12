@@ -3,7 +3,7 @@
     Created by hushiwei on 2018/7/12
     Desc : tensorflow 之 softmax练习
 '''
-
+import sys
 import numpy as np
 import tensorflow as tf
 import matplotlib as mpl
@@ -38,7 +38,7 @@ y = tf.placeholder(tf.float32, [None, 2], name='y')
 
 # 预测模型构建
 # 构建权重w和偏置项b
-# w第一个2是输入的样本的维度数目
+# w第一个2是输入的样本的维度数     目
 # w第二个2是样本的目标属性所属的类别数目(有多少个类别，这里就是几)
 # b中的2是样本的目标属性所属的类别数目(有多少个类别，这里就是几)
 w = tf.Variable(tf.zeros([2, 2]), name='w')
