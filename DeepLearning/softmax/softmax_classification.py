@@ -1,9 +1,10 @@
-# -- encoding:utf-8 --
-"""
-图片识别
-Create by ibf on 2018/5/5
-"""
+# -*- coding: utf-8 -*-
+'''
+    Created by hushiwei on 2018/7/12
+    Desc : tensorflow 之 softmax 之图片识别
+'''
 
+import sys
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -27,11 +28,12 @@ trainimg = mnist.train.images
 trainlabel = mnist.train.labels
 testimg = mnist.test.images
 testlabel = mnist.test.labels
-print(trainimg.shape)
-print(trainlabel.shape)
-print(testimg.shape)
-print(testlabel.shape)
-print(trainlabel[0])
+print('trainimg: ', trainimg.shape)
+print('trainlabel: ', trainlabel.shape)
+print('testimg: ', testimg.shape)
+print('testlabel: ', testlabel.shape)
+print(trainlabel[0,:])
+print(np.argmax(trainlabel[0,:]))
 
 # 随机展示5张图片
 nsample = 5
