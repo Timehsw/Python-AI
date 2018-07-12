@@ -186,7 +186,7 @@ if __name__ == '__main__':
     model=LinearRegression(fit_intercept=True)
     model.fit(x,y)
     score(y,model.predict(x))
-
+    #
     theta, intercept = fit(x, y, alpha=0.01, max_iter=100, fit_intercept=True)
     print("参数列表:", theta)
     print("截距项:", intercept)

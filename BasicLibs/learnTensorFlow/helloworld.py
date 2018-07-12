@@ -8,11 +8,10 @@ import tensorflow as tf
 
 import numpy as np
 
-aa = tf.random_uniform((2,2), 0, 0.5)
-print(aa)
-# a = tf.Variable(initial_value=tf.random_uniform([1],-1.0,1.0),name='w')
-# c=tf.add(a,b)
-# c = tf.multiply(a, b)
+w1 = tf.Variable(tf.random_normal([5]))[0]
+
+init = tf.global_variables_initializer()
+
 with tf.Session() as session:
-    res = session.run(aa)
-    print(res)
+    session.run(init)
+    print(session.run(w1))

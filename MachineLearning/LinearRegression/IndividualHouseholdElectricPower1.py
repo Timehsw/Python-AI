@@ -2,7 +2,7 @@
 '''
     Created by hushiwei on 2018/4/27.
 
-    desc: 时间与功率之间的关系
+    desc: 线性回归算法/时间与功率之间的关系
 '''
 
 import numpy as np
