@@ -1,7 +1,9 @@
-# -- encoding:utf-8 --
-"""
-Create by ibf on 2018/5/6
-"""
+# -*- coding: utf-8 -*-
+'''
+    Created by hushiwei on 2018/7/11
+    Desc : tensorflow 之 梯度下降求解线性回归 | 分布式执行
+'''
+
 
 import numpy as np
 import tensorflow as tf

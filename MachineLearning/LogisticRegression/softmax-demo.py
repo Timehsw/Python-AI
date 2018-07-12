@@ -17,7 +17,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import label_binarize
 from sklearn import metrics
-
+import sys
 ## 设置字符集，防止中文乱码
 mpl.rcParams['font.sans-serif'] = [u'simHei']
 mpl.rcParams['axes.unicode_minus'] = False
@@ -55,6 +55,8 @@ print("原始数据条数:%d；异常数据处理后数据条数:%d；异常数�
 ## 提取自变量和因变量
 X = datas[names]
 Y = datas[quality]
+print('------')
+print(Y.value_counts())
 
 ## 数据分割
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=0)
