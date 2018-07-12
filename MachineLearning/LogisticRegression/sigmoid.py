@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
     Created by hushiwei on 2018/7/12
-    Desc : sigmoid函数
+    Desc : 梯度下降法获取损失函数求解逻辑回归算法,以及sigmoid函数
 '''
 
 import numpy as np
