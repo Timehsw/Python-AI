@@ -3,7 +3,7 @@
     Created by hushiwei on 2018/7/12
     Desc : 梯度下降法获取损失函数求解逻辑回归算法,以及sigmoid函数
 '''
-
+import sys
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -28,6 +28,7 @@ print('x的特征:\n', x.head())
 print('y的类别:\n', y.head())
 
 
+
 # 使用梯度下降法求解
 
 # 概率转换成01的类数据
@@ -42,7 +43,7 @@ def sigmoid(theta, x):
     return prob.values
 
 
-# 损失函数
+# 损失函数+l2正则
 def lr_loss(y_true, prob):
     laplace = 1e-10
     lr_loss = - sum(y_true * np.log(prob).ravel() + (1 - y_true) * np.log(1 - prob + laplace).ravel()) + 1 / len(
@@ -53,7 +54,9 @@ def lr_loss(y_true, prob):
 # 初始化aplha 和 theta
 alpha = 0.02
 theta = np.zeros((4, 1))
-theta
+
+
+print('θ', theta)
 
 # 梯度下降法开始迭代
 y_true = y.reshape(-1, 1)
@@ -69,9 +72,14 @@ y = np.random.randint(1, 5, (5, 1))
 print(x)
 print(y)
 
+from sklearn.linear_model import LogisticRegression
 
-def sigmoid_func1(theta, x):
-    return 1 / (1 + np.exp(-theta.T.dot(x)))
+lr = LogisticRegression()
+lr.fit(x, y)
+lr.score(x, y)
+sklearn_prob = lr.predict_proba(x)
+sk_prob = sklearn_prob[:, 1].reshape(-1, 1)
+lr_loss(y, sk_prob)
 
 
 def sigmoid_func(z):
@@ -86,4 +94,4 @@ plt.plot(x, y, 'r-', linewidth=2, label="content")
 plt.legend(loc='lower right')
 plt.title("sigmoid 函数图像")
 plt.grid(b=True)
-plt.show()
+# plt.show()
