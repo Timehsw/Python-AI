@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
     Created by hushiwei on 2018/7/13
-    Desc : 简单神经网络
+    Desc : SimpleNeuralNetwork简单神经网络实现手写数字案例
 '''
 import tensorflow as tf
 import matplotlib as mpl
