@@ -38,3 +38,16 @@ print(df.describe())
 print('~' * 100)
 df2 = pd.DataFrame(ss.transform(X))
 print(df2.describe())
+
+print('-'*20,'scale','-'*20)
+
+from sklearn.preprocessing import scale
+import numpy as np
+
+xx = np.array([[1., -1., 2.],
+              [2., 0., 0.],
+              [0., 1., -1.]])
+x_scaled = scale(xx)
+
+print(x_scaled.mean(axis=0))
+print(x_scaled.std(axis=0))
