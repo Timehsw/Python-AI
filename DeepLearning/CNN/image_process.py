@@ -143,6 +143,44 @@ b = tf.less_equal(a, 0.9)
 c = tf.where(condition=b, x=a, y=a - a)
 # 对于a中所有小于等于0.9的像素值，设置为1
 d = tf.where(condition=b, x=c - c + 1, y=c)
-show_image_tensor(d)
+# show_image_tensor(d)
 
-# 六,图像的调整
+# 六、图像的调整
+# 亮度调整
+# image: RGB图像信息，设置为float类型和unit8类型的效果不一样，一般建议设置为float类型
+# delta: 取值范围(-1,1）之间的float类型的值，表示对于亮度的减弱或者增强的系数值
+# 底层执行：rgb -> hsv -> h,s,v*delta -> rgb
+adjust_brightness_image_tensor = tf.image.adjust_brightness(image=image_tensor, delta=0.8)
+# show_image_tensor(adjust_brightness_image_tensor)
+
+# 色调调整
+# image: RGB图像信息，设置为float类型和unit8类型的效果不一样，一般建议设置为float类型
+# delta: 取值范围(-1,1）之间的float类型的值，表示对于色调的减弱或者增强的系数值
+# 底层执行：rgb -> hsv -> h*delta,s,v -> rgb
+adjust_hue_image_tensor = tf.image.adjust_hue(image_tensor, delta=-0.8)
+# show_image_tensor(adjust_hue_image_tensor)
+
+# 饱和度调整
+# image: RGB图像信息，设置为float类型和unit8类型的效果不一样，一般建议设置为float类型
+# saturation_factor: 一个float类型的值，表示对于饱和度的减弱或者增强的系数值，饱和因子
+# 底层执行：rgb -> hsv -> h,s*saturation_factor,v -> rgb
+adjust_saturation_image_tensor = tf.image.adjust_saturation(image_tensor, saturation_factor=20)
+# show_image_tensor(adjust_saturation_image_tensor)
+
+# 对比度调整，公式：(x-mean) * contrast_factor + mean
+adjust_contrast_image_tensor = tf.image.adjust_contrast(image_tensor, contrast_factor=10)
+# show_image_tensor(adjust_contrast_image_tensor)
+
+# 图像的gamma校正
+# images: 要求必须是float类型的数据
+# gamma：任意值，Oup = In * Gamma
+adjust_gamma_image_tensor = tf.image.adjust_gamma(float32_image_tensor, gamma=100)
+# show_image_tensor(adjust_gamma_image_tensor)
+
+# 图像的归一化(x-mean)/adjusted_sttdev, adjusted_sttdev=max(stddev, 1.0/sqrt(image.NumElements()))
+per_image_standardization_image_tensor = tf.image.per_image_standardization(image_tensor)
+# show_image_tensor(per_image_standardization_image_tensor)
+
+# 七、噪音数据的加入
+noisy_image_tensor = image_tensor + tf.cast(5 * tf.random_normal(shape=[600, 510, 3], mean=0, stddev=0.1), tf.uint8)
+show_image_tensor(noisy_image_tensor)
