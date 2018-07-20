@@ -181,12 +181,12 @@ with tf.Session() as sess:
             print("测试准确率: %.3f" % test_acc)
 
             if train_acc >= 0.99 and test_acc >= 0.99:
-                saver.save(sess, './mnist2/model_{}_{}'.format(train_acc, test_acc), global_step=epoch)
+                saver.save(sess, './mn/model_{}_{}'.format(train_acc, test_acc), global_step=epoch)
                 break
         epoch += 1
 
     # 模型可视化输出
-    writer = tf.summary.FileWriter('./mnist2/graph', tf.get_default_graph())
+    writer = tf.summary.FileWriter('./mn/graph', tf.get_default_graph())
     writer.close()
 
 print("end....")
