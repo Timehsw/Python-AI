@@ -5,15 +5,19 @@
     Note : 结合SimpleNeuralNetwork代码学习学习
 '''
 
+
 import math
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
-# 数据加载
-mnist = input_data.read_data_sets('./data/mnist', one_hot=True)
+# 设置一个随机数种子
+tf.set_random_seed(28)
 
-# 手写数字识别的数据集主要包含三个部分,训练集(5.5w-mnist.train),测试集(1w-mnist.test),验证机(0.5w-mnist.valudation)
-# 手写数字图片大小是28*28像素的图片,也就是每个图片由784维的特征描述
+# 数据加载
+mnist = input_data.read_data_sets('data/mnist', one_hot=True)
+
+# 手写数字识别的数据集主要包含三个部分：训练集(5.5w, mnist.train)、测试集(1w, mnist.test)、验证集(0.5w, mnist.validation)
+# 手写数字图片大小是28*28*1像素的图片(黑白)，也就是每个图片由784维的特征描述
 train_img = mnist.train.images
 train_label = mnist.train.labels
 test_img = mnist.test.images
@@ -30,9 +34,10 @@ display_step = 1
 
 # 输入的样本维度大小信息
 input_dim = train_img.shape[1]
+# 输出的维度大小信息
 n_classes = train_label.shape[1]
 
-# 开始模型构建
+# 模型构建
 # 1. 设置数据输入的占位符
 x = tf.placeholder(tf.float32, shape=[None, input_dim], name='x')
 y = tf.placeholder(tf.float32, shape=[None, n_classes], name='y')
@@ -49,14 +54,14 @@ def learn_rate_func(epoch):
 
 
 def get_variable(name, shape=None, dtype=tf.float32, initializer=tf.random_normal_initializer(mean=0, stddev=0.1)):
-    '''
+    """
     返回一个对应的变量
     :param name:
     :param shape:
     :param dtype:
     :param initializer:
     :return:
-    '''
+    """
     return tf.get_variable(name, shape, dtype, initializer)
 
 
@@ -65,28 +70,25 @@ def le_net(x, y):
     # 1. 输入层
     with tf.variable_scope('input1'):
         # 将输入的x的格式转换为规定的格式
-        # [None-> input_dim]->[None,height,weight,channels]
+        # [None, input_dim] -> [None, height, weight, channels]
         net = tf.reshape(x, shape=[-1, 28, 28, 1])
     # 2. 卷积层
     with tf.variable_scope('conv2'):
         # 卷积
-        # conv2d(input, filter, strides, padding, use_cudnn_on_gpu=True, data_format="NHWC", name=None)->卷积的api
-        # data_format:表示的是输入的数据格式,两种:NHWC和NCHW,N=>样本数目,H=>Height,W=>Weight,C=>Channels.这个格式和输入的格式要一一对应上
-        # use_cudnn_on_gpu : 做GPU加速
-        # name :tensor的名字
-        # input : 输入数据,必须是一个4维格式的图像数据,具体格式和data_format有关,如果data_format是NHWC的时候,input的格式为:[batch_size,height,weight,channels] => [批次中的图片数目,图片的高度,图片的宽度,图片的通道数];如果data_format是NCHW的时候,input的格式为:[batch_size,channels,height,weight] => [批次中的图片数目,图片的通道数,图片的高度,图片的宽度]
-        # filter : 卷积核 , 是一个4维格式的数据,shape:[height,weight,in_channels,out_channels] => [窗口的高度,窗口的宽度,输入的channel通道数(上一层图像的深度),输出的通道数(卷积核数目)]
-        # strides : 步长 , 是一个4维的数据,每一维数据必须和data_format格式匹配,表示的是在data_format上每一维的移动步长,当格式为NHWC的时候,strides的格式为:[batch,in_height,in_weight,in_channels] => [样本上的移动大小,高度的移动大小,宽度的移动大小,深度的移动大小].要求在样本上和深度上的移动必须是1,也就是一个一个样本的处理,一个深度一个深度的处理
-        # padding : 填充, 只支持两个参数`"SAME", "VALID"`,当取值为SAME的时候,表示进行填充.强调:在tensorflow中,如果步长为1,并且padding为SAME的时候,经过卷积之后的图像大小是不变的.当取值为VALID的时候,表示多余的特征会丢弃
-        net = tf.nn.conv2d(input=net, filter=get_variable('w', shape=[5, 5, 1, 20]), strides=[1, 1, 1, 1],
-                           padding='SAME')
-        # 添加偏置项
+        # conv2d(input, filter, strides, padding, use_cudnn_on_gpu=True, data_format="NHWC", name=None) => 卷积的API
+        # data_format: 表示的是输入的数据格式，两种：NHWC和NCHW，N=>样本数目，H=>Height, W=>Weight, C=>Channels
+        # input：输入数据，必须是一个4维格式的图像数据，具体格式和data_format有关，如果data_format是NHWC的时候，input的格式为: [batch_size, height, weight, channels] => [批次中的图片数目，图片的高度，图片的宽度，图片的通道数]；如果data_format是NCHW的时候，input的格式为: [batch_size, channels, height, weight] => [批次中的图片数目，图片的通道数，图片的高度，图片的宽度]
+        # filter: 卷积核，是一个4维格式的数据，shape: [height, weight, in_channels, out_channels] => [窗口的高度，窗口的宽度，输入的channel通道数(上一层图片的深度)，输出的通道数(卷积核数目)]
+        # strides：步长，是一个4维的数据，每一维数据必须和data_format格式匹配，表示的是在data_format每一维上的移动步长，当格式为NHWC的时候，strides的格式为: [batch, in_height, in_weight, in_channels] => [样本上的移动大小，高度的移动大小，宽度的移动大小，深度的移动大小],要求在样本上和在深度通道上的移动必须是1；当格式为NCHW的时候，strides的格式为: [batch,in_channels, in_height, in_weight]
+        # padding: 只支持两个参数"SAME", "VALID"，当取值为SAME的时候，表示进行填充，"在TensorFlow中，如果步长为1，并且padding为SAME的时候，经过卷积之后的图像大小是不变的"；当VALID的时候，表示多余的特征会丢弃；
+        w = get_variable('w', [5, 5, 1, 20])
+        net = tf.nn.conv2d(input=net, filter=w, strides=[1, 1, 1, 1], padding='SAME')
         net = tf.nn.bias_add(net, get_variable('b', [20]))
         # 激励 ReLu
         # tf.nn.relu => max(fetures, 0)
         # tf.nn.relu6 => min(max(fetures,0), 6)
         net = tf.nn.relu(net)
-    # 3.池化
+    # 3. 池化
     with tf.variable_scope('pool3'):
         # 和conv2一样，需要给定窗口大小和步长
         # max_pool(value, ksize, strides, padding, data_format="NHWC", name=None)
@@ -96,32 +98,26 @@ def le_net(x, y):
         # 默认格式下：NHWC，strides：指定步长大小，必须是[batch, in_height, in_weight, in_channels],其中batch和in_channels必须为1
         # padding： 只支持两个参数"SAME", "VALID"，当取值为SAME的时候，表示进行填充，；当VALID的时候，表示多余的特征会丢弃；
         net = tf.nn.max_pool(value=net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-
-    # 4.卷积
+    # 4. 卷积
     with tf.variable_scope('conv4'):
-        net = tf.nn.conv2d(net, filter=get_variable('w', [5, 5, 20, 50]), strides=[1, 1, 1, 1], padding='SAME')
+        net = tf.nn.conv2d(input=net, filter=get_variable('w', [5, 5, 20, 50]), strides=[1, 1, 1, 1], padding='SAME')
         net = tf.nn.bias_add(net, get_variable('b', [50]))
         net = tf.nn.relu(net)
-
-    # 5.池化
+    # 5. 池化
     with tf.variable_scope('pool5'):
         net = tf.nn.max_pool(value=net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-
-    # 6.全连接
+    # 6. 全连接
     with tf.variable_scope('fc6'):
-        # 28->14->7(因为此时的卷积不改变图片的大小)
-        net = tf.reshape(net, shape=[-1, 7 * 7 * 50])
-        net = tf.add(tf.matmul(net, get_variable('w', [7 * 7 * 50, 500])), get_variable('b', [500]))
+        # 28 -> 14 -> 7(因为此时的卷积不改变图片的大小)
+        size = 7 * 7 * 50
+        net = tf.reshape(net, shape=[-1, size])
+        net = tf.add(tf.matmul(net, get_variable('w', [size, 500])), get_variable('b', [500]))
         net = tf.nn.relu(net)
-
-    # 7.全连接
+    # 7. 全连接
     with tf.variable_scope('fc7'):
         net = tf.add(tf.matmul(net, get_variable('w', [500, n_classes])), get_variable('b', [n_classes]))
-        act = tf.nn.softmax(net)
 
-    return act
-
-    pass
+    return net
 
 
 # 构建网络
@@ -131,7 +127,7 @@ act = le_net(x, y)
 # softmax_cross_entropy_with_logits: 计算softmax中的每个样本的交叉熵，logits指定预测值，labels指定实际值
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=act, labels=y))
 
-# 使用Adam优化方式比较多,就不用梯度下降了
+# 使用Adam优化方式比较多
 # learning_rate: 要注意，不要过大，过大可能不收敛，也不要过小，过小收敛速度比较慢
 train = tf.train.AdadeltaOptimizer(learning_rate=learn_rate).minimize(cost)
 
