@@ -72,3 +72,4 @@ FeatureEngineering/datas/C0911.csv
 # model out path
 mn/
 DeepLearning/CNN/data/17flowers/
+DeepLearning/CNN/data/captcha/
