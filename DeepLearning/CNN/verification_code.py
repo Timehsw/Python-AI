@@ -2,12 +2,11 @@
 '''
     Created by hushiwei on 2018/7/22
     Desc : 验证码识别
-    Note : 假定验证码中只有数字和大小写字母eg:Gx3f
+    Note : 假定验证码中只有数字和大小写字母eg:Gx3f.captcha是python验证码的库，安装方式pip install captcha
 '''
 
 import random
 import numpy as np
-# captcha是python验证码的库，安装方式pip install captcha
 from captcha.image import ImageCaptcha
 from PIL import Image
 import tensorflow as tf
@@ -55,8 +54,8 @@ def generate_code_image(code_size=4):
     # 将字符串转换为验证码
     captcha = image.generate(code_text)
     # 如果要保存验证码
-    image.write(code_text, 'data/captcha/' + code_text + ".jpg")
-    print(captcha)
+    # image.write(code_text, 'data/captcha/' + code_text + ".jpg")
+    # print(captcha)
 
     # 将验证码转换为图片的形式
     code_image = Image.open(captcha)
@@ -71,6 +70,54 @@ def show_code_image(text, image):
     plt.show()
 
 
+def code_cnn(x, y):
+    '''
+    构建一个验证码识别的CNN网络
+    :param x: Tensor对象,输入的特征矩阵信息,是一个4维的数据:[number_sample,height,weight,channels]
+    :param y: Tensor对象,输入的预测值信息,是一个5维的数据,其实就是验证码的值:[number_sample,code1,code2,code3,code4]
+    :return: 返回一个网络对象
+    '''
+
+    '''
+    网络结构：构建一个简单的CNN网络，因为起始此时验证码图片是一个比较简单的数据，所以不需要使用那么复杂的网络结构，当然了：这种简单的网络结构，80%+的正确率是比较容易的，但是超过80%比较难
+    conv -> relu6 -> max_pool -> conv -> relu6 -> max_pool -> dropout -> conv -> relu6 -> max_pool -> full connection -> full connection
+   '''
+    # 获取输入数据的格式，[number_sample, height, weight, channels]
+    with tf.variable_scope('conv1'):
+        pass
+    with tf.variable_scope('relu1'):
+        pass
+    with tf.variable_scope('max_pool1'):
+        pass
+
+    with tf.variable_scope('conv2'):
+        pass
+    with tf.variable_scope('relu2'):
+        pass
+    with tf.variable_scope('max_pool2'):
+        pass
+
+    with tf.variable_scope('dropout1'):
+        pass
+
+    with tf.variable_scope('conv3'):
+        pass
+    with tf.variable_scope('relu3'):
+        pass
+    with tf.variable_scope('max_pool3'):
+        pass
+
+    with tf.variable_scope('fc1'):
+        pass
+    with tf.variable_scope('fc2'):
+        pass
+
+    with tf.variable_scope('softmax'):
+        pass
+    pass
+
+
 if __name__ == '__main__':
     text, image = generate_code_image()
+    print(image.shape)
     show_code_image(text, image)
