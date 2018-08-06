@@ -5,7 +5,6 @@
     Note : 结合SimpleNeuralNetwork代码学习学习
 '''
 
-
 import math
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
