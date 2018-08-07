@@ -153,7 +153,7 @@ print("Size of 'conv1' is %s" % (conv1.shape,))
 #     plt.show()
 
 # Let's see 'conv2'
-print ("Size of 'conv2' is %s" % (conv2.shape,))
+print("Size of 'conv2' is %s" % (conv2.shape,))
 
 # Plot !
 # for i in range(3):
@@ -163,7 +163,7 @@ print ("Size of 'conv2' is %s" % (conv2.shape,))
 #     plt.show()
 
 # Let's see 'conv3'
-print ("Size of 'conv3' is %s" % (conv3.shape,))
+print("Size of 'conv3' is %s" % (conv3.shape,))
 
 # Plot !
 # for i in range(3):
@@ -173,7 +173,7 @@ print ("Size of 'conv3' is %s" % (conv3.shape,))
 #     plt.show()
 
 # Let's see 'pool'
-print ("Size of 'pool' is %s" % (pool.shape,))
+print("Size of 'pool' is %s" % (pool.shape,))
 
 # Plot !
 # for i in range(3):
@@ -184,13 +184,13 @@ print ("Size of 'pool' is %s" % (pool.shape,))
 
 
 # Let's see 'dense'
-print ("Size of 'dense' is %s" % (dense.shape,))
+print("Size of 'dense' is %s" % (dense.shape,))
 # Let's see 'out'
-print ("Size of 'out' is %s" % (out.shape,))
+print("Size of 'out' is %s" % (out.shape,))
 
 # Let's see weight!
 wc1 = sess.run(weights['wc1'])
-print ("Size of 'wc1' is %s" % (wc1.shape,))
+print("Size of 'wc1' is %s" % (wc1.shape,))
 
 # Plot !
 for i in range(3):
@@ -198,3 +198,5 @@ for i in range(3):
     plt.title(str(i) + "th conv filter")
     plt.colorbar()
     plt.show()
+
+sess.close()
