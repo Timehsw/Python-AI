@@ -62,6 +62,7 @@ class TextRNN(object):
 
         # 词向量映射
         with tf.device('/cpu:0'):
+            # 5000个单词,每个单词用64维表示
             embedding = tf.get_variable('embedding', [self.config.vocab_size, self.config.embedding_dim])
             embedding_inputs = tf.nn.embedding_lookup(embedding, self.input_x)
 
