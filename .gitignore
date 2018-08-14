@@ -84,3 +84,10 @@ Projects/plate_number/font
 Projects/text_classification_cnn_rnn/data
 Projects/text_classification_cnn_rnn/tensorboard
 Projects/text_classification_cnn_rnn/checkpoints
+Projects/Seq2Seq_Chatbot/bucket_dbs
+Projects/Seq2Seq_Chatbot/db
+Projects/Seq2Seq_Chatbot/model
+Projects/Seq2Seq_Chatbot/text8
+Projects/Seq2Seq_Chatbot/dgk_shooter_min.conv
+Projects/Seq2Seq_Chatbot/word2vec.zip
+Projects/Seq2Seq_Chatbot/a.txt
