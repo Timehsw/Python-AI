@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#encoding=utf8
+# encoding=utf8
 
 
 import os
@@ -14,9 +14,11 @@ from collections import OrderedDict, Counter
 import numpy as np
 from tqdm import tqdm
 
+
 def with_path(p):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, p)
+
 
 DICTIONARY_PATH = 'db/dictionary.json'
 EOS = '<eos>'
@@ -27,11 +29,12 @@ GO = '<go>'
 # 我一般是逗号放到句子后面的……
 # 不过这样比较方便屏蔽某一行，如果是JS就不用这样了，因为JS的JSON语法比较松，允许多余逗号
 buckets = [
-      (5, 15)
-    , (10, 20)
-    , (15, 25)
-    , (20, 30)
+    (5, 15),
+    (10, 20),
+    (15, 25),
+    (20, 30)
 ]
+
 
 def time(s):
     ret = ''
@@ -48,6 +51,7 @@ def time(s):
         ret += '{}s'.format(s)
     return ret
 
+
 def load_dictionary():
     with open(with_path(DICTIONARY_PATH), 'r', encoding='UTF-8') as fp:
         dictionary = [EOS, UNK, PAD, GO] + json.load(fp)
@@ -58,6 +62,7 @@ def load_dictionary():
             word_index[word] = index
         dim = len(dictionary)
     return dim, dictionary, index_word, word_index
+
 
 """
 def save_model(sess, name='model.ckpt'):
@@ -82,8 +87,8 @@ UNK_ID = word_index[UNK]
 PAD_ID = word_index[PAD]
 GO_ID = word_index[GO]
 
-class BucketData(object):
 
+class BucketData(object):
     def __init__(self, buckets_dir, encoder_size, decoder_size):
         self.encoder_size = encoder_size
         self.decoder_size = decoder_size
@@ -120,28 +125,31 @@ class BucketData(object):
                 if ask is not None and answer is not None:
                     return ask, answer
 
+
 def read_bucket_dbs(buckets_dir):
-    #buckets = [
-        #(5, 15)
-          #, (10, 20)
-        #, (15, 25)
-        #, (20, 30)
-    #]
-    
+    # buckets = [
+    # (5, 15)
+    # , (10, 20)
+    # , (15, 25)
+    # , (20, 30)
+    # ]
+
     ret = []
     for encoder_size, decoder_size in buckets:
         bucket_data = BucketData(buckets_dir, encoder_size, decoder_size)
         ret.append(bucket_data)
     return ret
 
+
 def sentence_indice(sentence):
     ret = []
-    for  word in sentence:
+    for word in sentence:
         if word in word_index:
             ret.append(word_index[word])
         else:
             ret.append(word_index[UNK])
     return ret
+
 
 def indice_sentence(indice):
     ret = []
@@ -153,17 +161,20 @@ def indice_sentence(indice):
             ret.append(word)
     return ''.join(ret)
 
+
 def vector_sentence(vector):
     return indice_sentence(vector.argmax(axis=1))
+
 
 def generate_bucket_dbs(
         input_dir,
         output_dir,
         buckets,
         tolerate_unk=1
-    ):
+):
     pool = {}
     word_count = Counter()
+
     def _get_conn(key):
         if key not in pool:
             if not os.path.exists(output_dir):
@@ -172,10 +183,11 @@ def generate_bucket_dbs(
             path = os.path.join(output_dir, name)
             conn = sqlite3.connect(path)
             cur = conn.cursor()
-            cur.execute("""CREATE TABLE IF NOT EXISTS conversation (ask text, answer text);""")
+            cur.execute("""CREATE TABLE IF NOT EXISTS conversation (ask TEXT, answer TEXT);""")
             conn.commit()
             pool[key] = (conn, cur)
         return pool[key]
+
     all_inserted = {}
     for encoder_size, decoder_size in buckets:
         key = (encoder_size, decoder_size)
@@ -191,6 +203,7 @@ def generate_bucket_dbs(
         print('读取数据库: {}'.format(db_path))
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
+
         def is_valid(s):
             unk = 0
             for w in s:
@@ -199,11 +212,13 @@ def generate_bucket_dbs(
                     if unk > tolerate_unk:
                         return False
             return True
+
         # 读取最大的rowid，如果rowid是连续的，结果就是里面的数据条数
         # 比SELECT COUNT(1)要快
         total = c.execute('''SELECT MAX(ROWID) FROM conversation;''').fetchall()[0][0]
         ret = c.execute('''SELECT ask, answer FROM conversation;''')
         wait_insert = []
+
         def _insert(wait_insert):
             if len(wait_insert) > 0:
                 for encoder_size, decoder_size, ask, answer in wait_insert:
@@ -217,6 +232,7 @@ def generate_bucket_dbs(
                     conn.commit()
                 wait_insert = []
             return wait_insert
+
         for ask, answer in tqdm(ret, total=total):
             if is_valid(ask) and is_valid(answer):
                 for i in range(len(buckets)):
@@ -229,11 +245,12 @@ def generate_bucket_dbs(
                             wait_insert = _insert(wait_insert)
                         break
     word_count_arr = [(k, v) for k, v in word_count.items()]
-    #word_count_arr [('畹', 188), ('华', 7890), ('吾', 465), ('侄', 726), ('你', 1267564), ('接', 32198)]
+    # word_count_arr [('畹', 188), ('华', 7890), ('吾', 465), ('侄', 726), ('你', 1267564), ('接', 32198)]
     word_count_arr = sorted(word_count_arr, key=lambda x: x[1], reverse=True)
-    #(10, 20, '我刚刚喷的烟', '是祖传的鸳鸯蝴蝶烟'), (10, 20, '是祖传的鸳鸯蝴蝶烟', '这一次你死定了!'),
+    # (10, 20, '我刚刚喷的烟', '是祖传的鸳鸯蝴蝶烟'), (10, 20, '是祖传的鸳鸯蝴蝶烟', '这一次你死定了!'),
     wait_insert = _insert(wait_insert)
     return all_inserted, word_count_arr
+
 
 if __name__ == '__main__':
     print('generate bucket dbs')
@@ -263,7 +280,7 @@ if __name__ == '__main__':
         os.makedirs(target_path)
 
     # 生成
-    all_inserted, word_count_arr = generate_bucket_dbs(db_path, target_path,  buckets,     1  )
+    all_inserted, word_count_arr = generate_bucket_dbs(db_path, target_path, buckets, 1)
     # 导出字典
     # print('一共找到{}个词'.format(len(word_count_arr)))
     # with open('dictionary_detail.json', 'w') as fp:
@@ -271,7 +288,7 @@ if __name__ == '__main__':
     # with open('dictionary.json', 'w') as fp:
     #     json.dump([x for x, _ in word_count_arr], fp, indent=4, ensure_ascii=False)
     # 输出词库状况
-    #for key, inserted_count in all_inserted.items():
-        #print(key)
-        #print(inserted_count)
-    #print('done')
+    # for key, inserted_count in all_inserted.items():
+    # print(key)
+    # print(inserted_count)
+    # print('done')
