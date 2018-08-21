@@ -17,7 +17,7 @@ tf.app.flags.DEFINE_float('dropout', 1.0, '每层输出DROPOUT的大小')
 tf.app.flags.DEFINE_integer('batch_size', 64, '批量梯度下降的批量大小')
 tf.app.flags.DEFINE_integer('size', 512, 'LSTM每层神经元数量')
 tf.app.flags.DEFINE_integer('num_layers', 2, 'LSTM的层数')
-tf.app.flags.DEFINE_integer('num_epoch', 5, '训练几轮')
+tf.app.flags.DEFINE_integer('num_epoch', 4096, '训练几轮')
 tf.app.flags.DEFINE_integer('num_samples', 512, '分批softmax的样本量')
 tf.app.flags.DEFINE_integer('num_per_epoch', 1000, '每轮训练多少随机样本')
 tf.app.flags.DEFINE_string('buckets_dir', './bucket_dbs', 'sqlite3数据库所在文件夹')
@@ -25,7 +25,7 @@ tf.app.flags.DEFINE_string('model_dir', './model', '模型保存的目录')
 tf.app.flags.DEFINE_string('model_name', 'model3', '模型保存的名称')
 tf.app.flags.DEFINE_boolean('use_fp16', False, '是否使用16位浮点数（默认32位）')
 tf.app.flags.DEFINE_integer('bleu', -1, '是否测试bleu')
-tf.app.flags.DEFINE_boolean('test', False, '是否在测试')
+tf.app.flags.DEFINE_boolean('test',False, '是否在测试')
 
 FLAGS = tf.app.flags.FLAGS
 buckets = data_utils.buckets
@@ -81,7 +81,7 @@ def train():
         ])
         bars_max = 20
         with tf.device('/gpu:0'):
-            for epoch_index in range(1, FLAGS.num_epoch + 1600):
+            for epoch_index in range(1, FLAGS.num_epoch):
                 print('Epoch {}:'.format(epoch_index))
                 time_start = time.time()
                 epoch_trained = 0
@@ -94,7 +94,7 @@ def train():
                     # if buckets_scale[i] > random_number:
                     # tmp.append(i)
                     # bucket_id = min(tmp)
-                    bucket_id = 1 if random_number <= 0.25 else 2 if random_number > 0.25 and random_number <= 0.5 else 3 if random_number > 0.5 and random_number < 0.75 else 4
+                    bucket_id = 0 if random_number <= 0.25 else 1 if random_number > 0.25 and random_number <= 0.5 else 2 if random_number > 0.5 and random_number < 0.75 else 3
                     # bucket_id = min([i for i in range(len(buckets_scale)) if buckets_scale[i] > random_number])
                     # 拿出64个问答对，data 和data_in 问答倒转
                     data, data_in = model.get_batch_data(
@@ -132,10 +132,10 @@ def train():
                         break
                 print('\n')
 
-        if not os.path.exists(FLAGS.model_dir):
-            os.makedirs(FLAGS.model_dir)
-        if epoch_index % 800 == 0:
-            model.saver.save(sess, os.path.join(FLAGS.model_dir, FLAGS.model_name))
+                if not os.path.exists(FLAGS.model_dir):
+                    os.makedirs(FLAGS.model_dir)
+                if epoch_index % 800 == 0:
+                    model.saver.save(sess, os.path.join(FLAGS.model_dir, FLAGS.model_name))
 
 
 def test_bleu(count):

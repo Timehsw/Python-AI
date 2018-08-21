@@ -1,4 +1,4 @@
-#encoding=utf8
+# encoding=utf8
 import pdb
 import random
 import copy
@@ -8,20 +8,21 @@ import tensorflow as tf
 
 from Projects.Seq2Seq_Chatbot import data_utils
 
+
 class S2SModel(object):
     def __init__(self,
-                source_vocab_size,
-                target_vocab_size,
-                buckets,
-                size,
-                dropout,
-                num_layers,
-                max_gradient_norm,
-                batch_size,
-                learning_rate,
-                num_samples,
-                forward_only=False,
-                dtype=tf.float32):
+                 source_vocab_size,
+                 target_vocab_size,
+                 buckets,
+                 size,
+                 dropout,
+                 num_layers,
+                 max_gradient_norm,
+                 batch_size,
+                 learning_rate,
+                 num_samples,
+                 forward_only=False,
+                 dtype=tf.float32):
         # init member variales
         self.source_vocab_size = source_vocab_size
         self.target_vocab_size = target_vocab_size
@@ -70,43 +71,44 @@ class S2SModel(object):
                     ),
                     dtype
                 )
+
             softmax_loss_function = sampled_loss
 
         # seq2seq_f
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
             # Encoder.先将cell进行deepcopy，因为seq2seq模型是两个相同的模型，但是模型参数不共享，所以encoder和decoder要使用两个不同的RnnCell
             tmp_cell = copy.deepcopy(cell)
-            
-                #cell:                RNNCell常见的一些RNNCell定义都可以用.
-                #num_encoder_symbols: source的vocab_size大小，用于embedding矩阵定义
-                #num_decoder_symbols: target的vocab_size大小，用于embedding矩阵定义
-                #embedding_size:      embedding向量的维度
-                #num_heads:           Attention头的个数，就是使用多少种attention的加权方式，用更多的参数来求出几种attention向量
-                #output_projection:   输出的映射层，因为decoder输出的维度是output_size，所以想要得到num_decoder_symbols对应的词还需要增加一个映射层，参数是W和B，W:[output_size, num_decoder_symbols],b:[num_decoder_symbols]
-                #feed_previous:       是否将上一时刻输出作为下一时刻输入，一般测试的时候置为True，此时decoder_inputs除了第一个元素之外其他元素都不会使用。
-                #initial_state_attention: 默认为False, 初始的attention是零；若为True，将从initial state和attention states开始。
-            #tf.contrib.legacy_seq2seq.embedding_attention_seq2seq(
-                #encoder_inputs, 
-                #decoder_inputs, 
-                #cell, 
-                #num_encoder_symbols, 
-                #num_decoder_symbols, 
-                #embedding_size, 
-                #num_heads=1, 
-                #output_projection=None, 
-                #feed_previous=False, 
-                #dtype=None, 
-                #scope=None, 
-                #initial_state_attention=False)    
+
+            # cell:                RNNCell常见的一些RNNCell定义都可以用.
+            # num_encoder_symbols: source的vocab_size大小，用于embedding矩阵定义
+            # num_decoder_symbols: target的vocab_size大小，用于embedding矩阵定义
+            # embedding_size:      embedding向量的维度
+            # num_heads:           Attention头的个数，就是使用多少种attention的加权方式，用更多的参数来求出几种attention向量
+            # output_projection:   输出的映射层，因为decoder输出的维度是output_size，所以想要得到num_decoder_symbols对应的词还需要增加一个映射层，参数是W和B，W:[output_size, num_decoder_symbols],b:[num_decoder_symbols]
+            # feed_previous:       是否将上一时刻输出作为下一时刻输入，一般测试的时候置为True，此时decoder_inputs除了第一个元素之外其他元素都不会使用。
+            # initial_state_attention: 默认为False, 初始的attention是零；若为True，将从initial state和attention states开始。
+            # tf.contrib.legacy_seq2seq.embedding_attention_seq2seq(
+            # encoder_inputs,
+            # decoder_inputs,
+            # cell,
+            # num_encoder_symbols,
+            # num_decoder_symbols,
+            # embedding_size,
+            # num_heads=1,
+            # output_projection=None,
+            # feed_previous=False,
+            # dtype=None,
+            # scope=None,
+            # initial_state_attention=False)
             return tf.contrib.legacy_seq2seq.embedding_attention_seq2seq(
-                encoder_inputs,# tensor of input seq
-                decoder_inputs,# tensor of decoder seq
-                tmp_cell,#自定义的cell,可以是GRU/LSTM, 设置multilayer等
-                num_encoder_symbols=source_vocab_size,# 词典大小 40000
-                num_decoder_symbols=target_vocab_size,# 目标词典大小 40000
-                embedding_size=size,# embedding 维度
-                output_projection=output_projection,# 不设定的话输出维数可能很大(取决于词表大小)，设定的话投影到一个低维向量
-                feed_previous=do_decode,# 
+                encoder_inputs,  # tensor of input seq
+                decoder_inputs,  # tensor of decoder seq
+                tmp_cell,  # 自定义的cell,可以是GRU/LSTM, 设置multilayer等
+                num_encoder_symbols=source_vocab_size,  # 词典大小 40000
+                num_decoder_symbols=target_vocab_size,  # 目标词典大小 40000
+                embedding_size=size,  # embedding 维度
+                output_projection=output_projection,  # 不设定的话输出维数可能很大(取决于词表大小)，设定的话投影到一个低维向量
+                feed_previous=do_decode,  #
                 dtype=dtype
             )
 
@@ -114,10 +116,10 @@ class S2SModel(object):
         self.encoder_inputs = []
         self.decoder_inputs = []
         self.decoder_weights = []
-        #encoder_inputs 这个列表对象中的每一个元素表示一个占位符，其名字分别为encoder0, encoder1,…,encoder39，encoder{i}的几何意义是编码器在时刻i的输入。
+        # encoder_inputs 这个列表对象中的每一个元素表示一个占位符，其名字分别为encoder0, encoder1,…,encoder39，encoder{i}的几何意义是编码器在时刻i的输入。
         # buckets中的最后一个是最大的（即第“-1”个）
         for i in range(buckets[-1][0]):
-            self.encoder_inputs.append(tf.placeholder(tf.int32,shape=[None],name='encoder_input_{}'.format(i) ))
+            self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None], name='encoder_input_{}'.format(i)))
         # 输出比输入大 1，这是为了保证下面的targets可以向左shift 1位
         for i in range(buckets[-1][1] + 1):
             self.decoder_inputs.append(tf.placeholder(
@@ -130,24 +132,24 @@ class S2SModel(object):
                 shape=[None],
                 name='decoder_weight_{}'.format(i)
             ))
-            #target_weights 是一个与 decoder_outputs 大小一样的 0-1 矩阵。该矩阵将目标序列长度以外的其他位置填充为标量值 0。
-                # Our targets are decoder inputs shifted by one.
+            # target_weights 是一个与 decoder_outputs 大小一样的 0-1 矩阵。该矩阵将目标序列长度以外的其他位置填充为标量值 0。
+            # Our targets are decoder inputs shifted by one.
         targets = [self.decoder_inputs[i + 1] for i in range(buckets[-1][1])]
 
-# 跟language model类似，targets变量是decoder inputs平移一个单位的结果，
-    #encoder_inputs: encoder的输入，一个tensor的列表。列表中每一项都是encoder时的一个词（batch）。
-        #decoder_inputs: decoder的输入，同上
-        #targets:        目标值，与decoder_input只相差一个<EOS>符号，int32型
-        #weights:        目标序列长度值的mask标志，如果是padding则weight=0，否则weight=1
-        #buckets:        就是定义的bucket值，是一个列表：[(5，10), (10，20),(20，30)...]
-        #seq2seq:        定义好的seq2seq模型，可以使用后面介绍的embedding_attention_seq2seq，embedding_rnn_seq2seq，basic_rnn_seq2seq等
-        #softmax_loss_function: 计算误差的函数，(labels, logits)，默认为sparse_softmax_cross_entropy_with_logits
-        #per_example_loss: 如果为真，则调用sequence_loss_by_example，返回一个列表，其每个元素就是一个样本的loss值。如果为假，则调用sequence_loss函数，对一个batch的样本只返回一个求和的loss值，具体见后面的分析
-        #name: Optional name for this operation, defaults to "model_with_buckets".
+        # 跟language model类似，targets变量是decoder inputs平移一个单位的结果，
+        # encoder_inputs: encoder的输入，一个tensor的列表。列表中每一项都是encoder时的一个词（batch）。
+        # decoder_inputs: decoder的输入，同上
+        # targets:        目标值，与decoder_input只相差一个<EOS>符号，int32型
+        # weights:        目标序列长度值的mask标志，如果是padding则weight=0，否则weight=1
+        # buckets:        就是定义的bucket值，是一个列表：[(5，10), (10，20),(20，30)...]
+        # seq2seq:        定义好的seq2seq模型，可以使用后面介绍的embedding_attention_seq2seq，embedding_rnn_seq2seq，basic_rnn_seq2seq等
+        # softmax_loss_function: 计算误差的函数，(labels, logits)，默认为sparse_softmax_cross_entropy_with_logits
+        # per_example_loss: 如果为真，则调用sequence_loss_by_example，返回一个列表，其每个元素就是一个样本的loss值。如果为假，则调用sequence_loss函数，对一个batch的样本只返回一个求和的loss值，具体见后面的分析
+        # name: Optional name for this operation, defaults to "model_with_buckets".
 
 
 
-        if forward_only:# 测试阶段
+        if forward_only:  # 测试阶段
             self.outputs, self.losses = tf.contrib.legacy_seq2seq.model_with_buckets(
                 self.encoder_inputs,
                 self.decoder_inputs,
@@ -166,33 +168,33 @@ class S2SModel(object):
                         ) + output_projection[1]
                         for output in self.outputs[b]
                     ]
-        else:#训练阶段
-            #将输入长度分成不同的间隔，这样数据的在填充时只需要填充到相应的bucket长度即可，不需要都填充到最大长度。
-            #比如buckets取[(5，10), (10，20),(20，30)...]（每个bucket的第一个数字表示source填充的长度，
-            #第二个数字表示target填充的长度，eg：‘我爱你’-->‘I love you’，应该会被分配到第一个bucket中，
-            #然后‘我爱你’会被pad成长度为5的序列，‘I love you’会被pad成长度为10的序列。其实就是每个bucket表示一个模型的参数配置），
-            #这样对每个bucket都构造一个模型，然后训练时取相应长度的序列进行，而这些模型将会共享参数。
-            #其实这一部分可以参考现在的dynamic_rnn来进行理解，dynamic_rnn是对每个batch的数据将其pad至本batch中长度最大的样本，
-            #而bucket则是在数据预处理环节先对数据长度进行聚类操作。明白了其原理之后我们再看一下该函数的参数和内部实现：
-            #encoder_inputs: encoder的输入，一个tensor的列表。列表中每一项都是encoder时的一个词（batch）。
-            #decoder_inputs: decoder的输入，同上
-            #targets:        目标值，与decoder_input只相差一个<EOS>符号，int32型
-            #weights:        目标序列长度值的mask标志，如果是padding则weight=0，否则weight=1
-            #buckets:        就是定义的bucket值，是一个列表：[(5，10), (10，20),(20，30)...]
-            #seq2seq:        定义好的seq2seq模型，可以使用后面介绍的embedding_attention_seq2seq，embedding_rnn_seq2seq，basic_rnn_seq2seq等
-            #softmax_loss_function: 计算误差的函数，(labels, logits)，默认为sparse_softmax_cross_entropy_with_logits
-            #per_example_loss: 如果为真，则调用sequence_loss_by_example，返回一个列表，其每个元素就是一个样本的loss值。如果为假，则调用sequence_loss函数，对一个batch的样本只返回一个求和的loss值，具体见后面的分析
-            #name: Optional name for this operation, defaults to "model_with_buckets".            
-            #tf.contrib.legacy_seq2seq.model_with_buckets(encoder_inputs, 
-                                                        #decoder_inputs, 
-                                                        #targets, 
-                                                        #weights, 
-                                                        #buckets, 
-                                                        #seq2seq, 
-                                                        #softmax_loss_function=None, 
-                                                        #per_example_loss=False, 
-                                                        #name=None)
-            
+        else:  # 训练阶段
+            # 将输入长度分成不同的间隔，这样数据的在填充时只需要填充到相应的bucket长度即可，不需要都填充到最大长度。
+            # 比如buckets取[(5，10), (10，20),(20，30)...]（每个bucket的第一个数字表示source填充的长度，
+            # 第二个数字表示target填充的长度，eg：‘我爱你’-->‘I love you’，应该会被分配到第一个bucket中，
+            # 然后‘我爱你’会被pad成长度为5的序列，‘I love you’会被pad成长度为10的序列。其实就是每个bucket表示一个模型的参数配置），
+            # 这样对每个bucket都构造一个模型，然后训练时取相应长度的序列进行，而这些模型将会共享参数。
+            # 其实这一部分可以参考现在的dynamic_rnn来进行理解，dynamic_rnn是对每个batch的数据将其pad至本batch中长度最大的样本，
+            # 而bucket则是在数据预处理环节先对数据长度进行聚类操作。明白了其原理之后我们再看一下该函数的参数和内部实现：
+            # encoder_inputs: encoder的输入，一个tensor的列表。列表中每一项都是encoder时的一个词（batch）。
+            # decoder_inputs: decoder的输入，同上
+            # targets:        目标值，与decoder_input只相差一个<EOS>符号，int32型
+            # weights:        目标序列长度值的mask标志，如果是padding则weight=0，否则weight=1
+            # buckets:        就是定义的bucket值，是一个列表：[(5，10), (10，20),(20，30)...]
+            # seq2seq:        定义好的seq2seq模型，可以使用后面介绍的embedding_attention_seq2seq，embedding_rnn_seq2seq，basic_rnn_seq2seq等
+            # softmax_loss_function: 计算误差的函数，(labels, logits)，默认为sparse_softmax_cross_entropy_with_logits
+            # per_example_loss: 如果为真，则调用sequence_loss_by_example，返回一个列表，其每个元素就是一个样本的loss值。如果为假，则调用sequence_loss函数，对一个batch的样本只返回一个求和的loss值，具体见后面的分析
+            # name: Optional name for this operation, defaults to "model_with_buckets".
+            # tf.contrib.legacy_seq2seq.model_with_buckets(encoder_inputs,
+            # decoder_inputs,
+            # targets,
+            # weights,
+            # buckets,
+            # seq2seq,
+            # softmax_loss_function=None,
+            # per_example_loss=False,
+            # name=None)
+
             self.outputs, self.losses = tf.contrib.legacy_seq2seq.model_with_buckets(
                 self.encoder_inputs,
                 self.decoder_inputs,
@@ -204,29 +206,27 @@ class S2SModel(object):
             )
 
         params = tf.trainable_variables()
-        opt = tf.train.AdamOptimizer(learning_rate=learning_rate )
+        opt = tf.train.AdamOptimizer(learning_rate=learning_rate)
 
-        if not forward_only:# 只有训练阶段才需要计算梯度和参数更新
+        if not forward_only:  # 只有训练阶段才需要计算梯度和参数更新
             self.gradient_norms = []
             self.updates = []
-            for output, loss in zip(self.outputs, self.losses):# 用梯度下降法优化
+            for output, loss in zip(self.outputs, self.losses):  # 用梯度下降法优化
                 gradients = tf.gradients(loss, params)
-                clipped_gradients, norm = tf.clip_by_global_norm( gradients,   max_gradient_norm   )
+                clipped_gradients, norm = tf.clip_by_global_norm(gradients, max_gradient_norm)
                 self.gradient_norms.append(norm)
-                self.updates.append(opt.apply_gradients(zip(clipped_gradients, params)  ))
+                self.updates.append(opt.apply_gradients(zip(clipped_gradients, params)))
         # self.saver = tf.train.Saver(tf.all_variables())
-        self.saver = tf.train.Saver(tf.global_variables(),write_version=tf.train.SaverDef.V2)
+        self.saver = tf.train.Saver(tf.global_variables(), write_version=tf.train.SaverDef.V2)
 
-    
-    
     def step(
-        self,
-        session,
-        encoder_inputs,
-        decoder_inputs,
-        decoder_weights,
-        bucket_id,
-        forward_only
+            self,
+            session,
+            encoder_inputs,
+            decoder_inputs,
+            decoder_weights,
+            bucket_id,
+            forward_only
     ):
         encoder_size, decoder_size = self.buckets[bucket_id]
         if len(encoder_inputs) != encoder_size:
@@ -260,14 +260,13 @@ class S2SModel(object):
         input_feed[last_target] = np.zeros([self.batch_size], dtype=np.int32)
 
         if not forward_only:
-            output_feed = [self.updates[bucket_id], self.gradient_norms[bucket_id],self.losses[bucket_id]]
+            output_feed = [self.updates[bucket_id], self.gradient_norms[bucket_id], self.losses[bucket_id]]
             output_feed.append(self.outputs[bucket_id][i])
         else:
             output_feed = [self.losses[bucket_id]]
             for i in range(decoder_size):
                 output_feed.append(self.outputs[bucket_id][i])
 
-        
         outputs = session.run(output_feed, feed_dict=input_feed)
         if not forward_only:
             return outputs[1], outputs[2], outputs[3:]
@@ -291,15 +290,16 @@ class S2SModel(object):
         for encoder_input, decoder_input in data:
             # encoder_input, decoder_input = random.choice(data[bucket_id])
             # encoder_input, decoder_input = bucket_db.random()
-            #把输入句子中每个字转化为字典id
+            # 把输入句子中每个字转化为字典id
             encoder_input = data_utils.sentence_indice(encoder_input)
             decoder_input = data_utils.sentence_indice(decoder_input)
             # Encoder
             encoder_pad = [data_utils.PAD_ID] * (
                 encoder_size - len(encoder_input)
             )
-            #空格放前面，增强句子向量的语义信息
-            encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
+            # 空格放前面，增强句子向量的语义信息
+            # encoder_inputs.append(list(reversed(encoder_input + encoder_pad)))
+            encoder_inputs.append(encoder_pad + encoder_input)
             # Decoder
             decoder_pad_size = decoder_size - len(decoder_input) - 2
             decoder_inputs.append(
@@ -327,5 +327,5 @@ class S2SModel(object):
                 if i == decoder_size - 1 or target == data_utils.PAD_ID:
                     batch_weight[j] = 0.0
             batch_weights.append(batch_weight)
-            #64*10  ,64*20 ,64*20
+            # 64*10  ,64*20 ,64*20
         return batch_encoder_inputs, batch_decoder_inputs, batch_weights
