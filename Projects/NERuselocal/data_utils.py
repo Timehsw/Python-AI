@@ -130,7 +130,7 @@ def get_seg_features(string):
     Segment text with jieba
     features are represented in bies format
     s donates single word
-    单字赋值为1
+    单字赋值为0
     第一个字为1,最后一个字为3,中间的所有字都为2
     按照这个规则切词后转为id
     """

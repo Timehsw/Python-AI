@@ -14,6 +14,7 @@ from sklearn.linear_model import LogisticRegressionCV, LogisticRegression
 from sklearn.linear_model.coordinate_descent import ConvergenceWarning
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import sys
 
 ## 设置字符集，防止中文乱码
 mpl.rcParams['font.sans-serif'] = [u'simHei']
@@ -27,11 +28,11 @@ names = ['id', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell
          'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei',
          'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class']
 df = pd.read_csv(path, names=names)
-print(df.head())
-print(df.shape)
+# print(df.head())
+# print(df.shape)
 datas = df.replace('?', np.nan).dropna(how='any')
-print(datas.head())
-print(datas.shape)
+# print(datas.head())
+# print(datas.shape)
 
 ## 抽取x,y
 X = datas[names[1:10]]
@@ -55,19 +56,29 @@ solver:参数优化方式
 lr = LogisticRegressionCV(multi_class='ovr', fit_intercept=True, Cs=np.logspace(-2, 2, 20), cv=2, penalty='l2',
                           solver='lbfgs', tol=0.01)
 re = lr.fit(X_train, Y_train)
+# lr.fit(X_train,Y_train)
 # 4. 模型效果获取
 r = re.score(X_train, Y_train)
 print("R值（准确率）：", r)
 print("稀疏化特征比率：%.2f%%" % (np.mean(lr.coef_.ravel() == 0) * 100))
 print("参数：", re.coef_)
 print("截距：", re.intercept_)
-print(re.predict_proba(X_test))  # 获取sigmoid函数返回的概率值
+# print(re.predict_proba(X_test))  # 获取sigmoid函数返回的概率值
 
 # 数据预测
 ## a. 预测数据格式化(归一化)
 X_test = ss.transform(X_test)  # 使用模型进行归一化操作
 ## b. 结果数据预测
 Y_predict = re.predict(X_test)
+Y_predict2 = lr.predict_proba(X_test)
+# print(re.score(X_test, Y_test))
+
+print('Y_predict')
+print(Y_predict)
+print('~'*100)
+print('Y_predict2')
+print(Y_predict2)
+sys.exit()
 
 ## c. 图表展示
 x_len = range(len(X_test))
