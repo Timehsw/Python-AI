@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
     Created by hushiwei on 2018/10/11
-    Desc : CountVectorizer
+    Desc : CountVectorizer例子
     Note : 
 '''
 
