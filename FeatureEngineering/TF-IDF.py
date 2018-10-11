@@ -33,7 +33,7 @@ tfidf = TfidfVectorizer(min_df=0, dtype=np.float64)
 df2 = tfidf.fit_transform(df)
 print(df2.toarray())
 print(tfidf.get_feature_names())
-print(tfidf.get_stop_words())
+# print(tfidf.get_stop_words())
 print('转换另外的文档数据')
 print(tfidf.transform(arr1).toarray())
 
@@ -47,7 +47,7 @@ print(hashing.get_stop_words())
 print("转换另外的文档数据")
 print(hashing.transform(arr1).toarray())
 
-print('~' * 100)
+print('~' * 100,"以词袋法的形式表示文档")
 # 以词袋法的形式表示文档
 count = CountVectorizer(min_df=0.1, dtype=np.float64, ngram_range=(0, 1))
 df4 = count.fit_transform(df)
