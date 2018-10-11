@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
     Created by hushiwei on 2018/9/27
-    Desc : 
+    Desc : python面向对象编程
     Note : 
 '''
 
