@@ -23,6 +23,10 @@ def basic_df_example(spark):
     # spark is an existing SparkSession
     df = spark.read.json("./resources/people.json")
     # Displays the content of the DataFrame to stdout
+    fields = [StructField("age", IntegerType(), True) ,StructField("name", StringType(), True)]
+    schema = StructType(fields)
+    rdd=spark.sparkContext.parallelize([{"name":"Andy", "age":30},{"name":"Andy", "age":30}])
+    spark.createDataFrame(rdd,schema).show()
     df.show()
     # +----+-------+
     # | age|   name|
