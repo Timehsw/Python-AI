@@ -23,20 +23,19 @@ mpl.rcParams['axes.unicode_minus'] = False
 warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
 
 ## 数据读取并处理异常数据
-path = './datas/breast-cancer-wisconsin.data'
-names = ['id', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape',
-         'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei',
-         'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class']
+path = './datas/demo.csv'
+names = ['id','checking','duration','history','purpose','amount','savings','employed','installp','marital','coapp','resident','property','age','other','housing','existcr','job','depends','telephon','foreign','good_bad','checkingstr','historystr']
 df = pd.read_csv(path, names=names)
-# print(df.head())
-# print(df.shape)
+print(df.head())
+print(df.shape)
+sys.exit()
 datas = df.replace('?', np.nan).dropna(how='any')
 # print(datas.head())
 # print(datas.shape)
 
 ## 抽取x,y
-X = datas[names[1:10]]
-Y = datas[names[10]]
+X = datas[:-1]
+Y = datas[-1]
 
 ## 分割训练集和测试集
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.1, random_state=0)
