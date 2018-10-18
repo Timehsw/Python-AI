@@ -222,6 +222,9 @@ print("gridsearchcv 的预测值",y_test_hat2)
 print('-'*20,"应用最优参数看效果",'-'*20)
 
 
+
+
+
 #应用最优参数看效果
 mms_best = MinMaxScaler()
 skb_best = SelectKBest(chi2, k=3)

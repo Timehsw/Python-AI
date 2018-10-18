@@ -15,6 +15,7 @@ from sklearn.linear_model.coordinate_descent import ConvergenceWarning
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import sys
+from sklearn.metrics import *
 
 ## 设置字符集，防止中文乱码
 mpl.rcParams['font.sans-serif'] = [u'simHei']
@@ -72,14 +73,7 @@ X_test = ss.transform(X_test)  # 使用模型进行归一化操作
 Y_predict = re.predict(X_test)
 Y_predict2 = lr.predict_proba(X_test)
 # print(re.score(X_test, Y_test))
-
-print('Y_predict')
-print(Y_predict)
-print('~'*100)
-print('Y_predict2')
-print(Y_predict2)
-
-## c. 图表展示
+# ## c. 图表展示
 x_len = range(len(X_test))
 plt.figure(figsize=(14, 7), facecolor='w')
 plt.ylim(0, 6)
@@ -89,4 +83,11 @@ plt.legend(loc='upper left')
 plt.xlabel(u'数据编号', fontsize=18)
 plt.ylabel(u'乳腺癌类型', fontsize=18)
 plt.title(u'Logistic回归算法对数据进行分类', fontsize=20)
+plt.show()
+# re.predict_proba()
+fpr, tpr, thresholds = roc_curve(X_test, Y_predict2[:-1])
+
+plt.figure()
+plt.plot( tpr, color='green', label='TPR')
+plt.plot( fpr, color='red', label='FPR')
 plt.show()

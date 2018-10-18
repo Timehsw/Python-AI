@@ -23,19 +23,25 @@ mpl.rcParams['axes.unicode_minus'] = False
 warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
 
 ## 数据读取并处理异常数据
-path = './datas/demo.csv'
-names = ['id','checking','duration','history','purpose','amount','savings','employed','installp','marital','coapp','resident','property','age','other','housing','existcr','job','depends','telephon','foreign','good_bad','checkingstr','historystr']
+
+path = './datas/breast-cancer-wisconsin.data'
+names = ['id', 'Clump Thickness', 'Uniformity of Cell Size', 'Uniformity of Cell Shape',
+         'Marginal Adhesion', 'Single Epithelial Cell Size', 'Bare Nuclei',
+         'Bland Chromatin', 'Normal Nucleoli', 'Mitoses', 'Class']
+
+
+# path = './datas/demo.csv'
+# names = ['id','checking','duration','history','purpose','amount','savings','employed','installp','marital','coapp','resident','property','age','other','housing','existcr','job','depends','telephon','foreign','good_bad','checkingstr','historystr']
 df = pd.read_csv(path, names=names)
 print(df.head())
 print(df.shape)
-sys.exit()
 datas = df.replace('?', np.nan).dropna(how='any')
 # print(datas.head())
 # print(datas.shape)
 
 ## 抽取x,y
-X = datas[:-1]
-Y = datas[-1]
+Y = datas['Class']
+X=datas.drop(columns=['Class'])
 
 ## 分割训练集和测试集
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.1, random_state=0)
@@ -72,20 +78,7 @@ Y_predict = re.predict(X_test)
 Y_predict2 = lr.predict_proba(X_test)
 # print(re.score(X_test, Y_test))
 
-print('Y_predict')
-print(Y_predict)
-print('~'*100)
-print('Y_predict2')
-print(Y_predict2)
+from BasicLibs.learnMatplotlib.binary_evaluation import binary_evaluation
 
-## c. 图表展示
-x_len = range(len(X_test))
-plt.figure(figsize=(14, 7), facecolor='w')
-plt.ylim(0, 6)
-plt.plot(x_len, Y_test, 'ro', markersize=8, zorder=3, label=u'真实值')
-plt.plot(x_len, Y_predict, 'go', markersize=14, zorder=2, label=u'预测值,$R^2$=%.3f' % re.score(X_test, Y_test))
-plt.legend(loc='upper left')
-plt.xlabel(u'数据编号', fontsize=18)
-plt.ylabel(u'乳腺癌类型', fontsize=18)
-plt.title(u'Logistic回归算法对数据进行分类', fontsize=20)
-plt.show()
+utils=binary_evaluation(Y_test.values,Y_predict2[:, 1])
+utils.plot_ks()
