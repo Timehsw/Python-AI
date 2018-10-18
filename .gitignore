@@ -70,6 +70,7 @@ FeatureEngineering/datas/C0904.csv
 FeatureEngineering/datas/C0911.csv
 
 # model out path
+MachineLearning/KMeans/datas
 DeepLearning/CNN/nets/
 mn/
 DeepLearning/CNN/data/17flowers/
