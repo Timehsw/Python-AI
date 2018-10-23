@@ -16,8 +16,6 @@ from sklearn.datasets import make_blobs # 导入产生模拟数据的方法
 
 
 pltcolor=['b<', 'g>', 'r1', 'c2', 'm3', 'y4', 'ks', 'wp']   #颜色
-inputfile = 'E:/Work/python/data.xlsx'  #待聚类的数据文件，需要进行标准化的数据文件；
-zscoredfile = 'E:/Work/python/zdata.xlsx'  #标准差计算后的数据存储路径文件；
 
 # 1. 产生模拟数据
 N = 1000
@@ -60,29 +58,6 @@ if __name__ == '__main__' :
 
         d.append(kmodel.inertia_)  # inertia簇内误差平方和
 
-        if mink >= maxk - 1:
-            x = []
-            y = []
-            for i in range(0, len(r1)):
-                x.append([])
-                y.append([])
-
-            for i in range(0, len(kmlabels)):
-                labelnum = kmlabels[i] #输出每条数据的类别标签
-                if labelnum >= 0:
-                    x[labelnum].append(newData[i][0])
-                    y[labelnum].append(newData[i][1])
-
-            # blue,green,red,cyan,magenta,yellow,black,white
-            for i in range(0, len(r1)):
-                plt.plot(x[i], y[i], pltcolor[i])
-            plt.show()
-
-    if mink < maxk - 1 :
-        plt.plot(range(mink, maxk), d, marker='o')
-        plt.xlabel('number of clusters')
-        plt.ylabel('distortions')
-        plt.show()
 
 
     def density_plot(data): #自定义作图函数

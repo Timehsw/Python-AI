@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import make_blobs  # 导入产生模拟数据的方法
 from sklearn.cluster import KMeans  # 导入kmeans 类
-
+import time
+from MachineLearning.cluster_evaluate.calculate_dvi import dunn
 
 def distEclud(vecA, vecB, axis=None):
     '''
@@ -152,6 +153,11 @@ if __name__ == '__main__':
     N = 1000
     centers = 4
     X, Y = make_blobs(n_samples=N, n_features=2, centers=centers, random_state=28)
+    # df = pd.DataFrame(X, columns=list('abcdefghij'))
+    # df.to_csv(
+    #     '/Users/hushiwei/PycharmProjects/gai_platform/data/data_spliter/local_debug_data/cluster_data/cluster_data.csv',
+    #     sep=',', index=False)
+    # sys.exit()
 
     # 2. 模型构建
     km = KMeans(n_clusters=centers, init='random', random_state=28)
@@ -196,5 +202,13 @@ if __name__ == '__main__':
     dp = calculate_db(cluster_centers, cluster_points)
     print('dp : ', dp)
 
-    dvi = calculate_dvi(cluster_points)
-    print('dvi : ', dvi)
+    start=time.time()
+    # dvi = calculate_dvi(cluster_points)
+    # print('dvi : ', dvi)
+
+
+    a = [point.values for point in cluster_points.values()]
+    di=dunn(a)
+    print('di : ',di)
+
+    print("dvi cost ",time.time()-start)
