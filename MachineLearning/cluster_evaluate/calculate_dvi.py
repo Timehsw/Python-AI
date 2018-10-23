@@ -2,7 +2,7 @@
 '''
     Created by hushiwei on 2018/10/23
     Desc : 计算dvi
-    Note :
+    Note : 看看还是能看懂的,其实和我之前实现的一样的,只不过是用成矩阵计算了,这样更快了
 '''
 
 import numpy as np
