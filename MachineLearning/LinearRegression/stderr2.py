@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn import linear_model
 from sklearn.model_selection import train_test_split
 import gc
+
 # 加载数据
 path = './datas/iris.data'
 names = ['sepal length', 'sepal width', 'petal length', 'petal width', 'cla']
@@ -41,15 +42,17 @@ resLogit = logit.fit(x_train, y_train)
 predProbs = resLogit.predict_proba(x_train)
 gc.collect()
 # Design matrix -- add column of 1's at the beginning of your X_train matrix
-X_design = np.hstack([ x_train,np.ones((x_train.shape[0], 1))])
+X_design = np.hstack([x_train, np.ones((x_train.shape[0], 1))])
 # Initiate matrix of 0's, fill diagonal with each predicted observation's variance
-V = np.diagflat(np.prod(predProbs, axis=1))
+V = np.prod(predProbs, axis=1).ravel()
+# V = np.diagflat(np.prod(predProbs, axis=1))
+
 
 # Covariance matrix
 # Note that the @-operater does matrix multiplication in Python 3.5+, so if you're running
 # Python 3.5+, you can replace the covLogit-line below with the more readable:
 # covLogit = np.linalg.inv(X_design.T @ V @ X_design)
-covLogit = np.linalg.inv(np.dot(np.dot(X_design.T, V), X_design))
+covLogit = np.linalg.inv(np.dot(X_design.T * V, X_design))
 print("Covariance matrix: ", covLogit)
 
 # Standard errors
