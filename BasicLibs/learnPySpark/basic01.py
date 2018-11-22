@@ -194,8 +194,8 @@ if __name__ == "__main__":
         .getOrCreate()
     # $example off:init_session$
 
-    basic_df_example(spark)
-    # schema_inference_example(spark)
+    # basic_df_example(spark)
+    schema_inference_example(spark)
     # programmatic_schema_example(spark)
 
     spark.stop()
