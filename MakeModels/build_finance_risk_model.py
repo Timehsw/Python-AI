@@ -111,27 +111,118 @@ raw_objs_cols_df = raw_date_obj_cols_df.select_dtypes(include=['object'])
 
 seed = 7
 test_size = 0.40
-X_train, X_test, y_train, y_test = train_test_split(raw_numeric_cols_df, Y, test_size=test_size, random_state=seed)
+# X_train, X_test, y_train, y_test = train_test_split(raw_numeric_cols_df, Y, test_size=test_size, random_state=seed)
 
-#######################################      XGBoost抽取Top200         ##############################################
+
+
+
+# 取top10
+# df.nlargest(10,'fscore')
+# importance_numeric_columns=df.nlargest(50,'fscore').feature.values.tolist()
+# new_numeric_dataset=raw_numeric_cols_df[importance_numeric_columns]
+# 调试过程,将new_numeric_dataset存下来,免得又跑一遍才能得到这个结果
+# new_numeric_dataset.to_pickle('./datas/new_numeric_dataset.pkl')
+new_numeric_dataset=pd.read_pickle('./datas/new_numeric_dataset.pkl')
+# X_train, X_test, y_train, y_test = train_test_split(new_numeric_dataset, Y, test_size=test_size, random_state=seed)
+
+######################################  衍生变量  ###############################################
+
+# 现在还剩时间类型和字符串类型的特征
+print("#"*100)
+
+apply_time_df=raw_date_cols_df['apply_time']
+
+
+# 单日最大查询次数日期 1,3,6,12月
+# 单日最大查询公司数日期 1,3,6,12月
+# 单日最大查询次数日期 1,2,3,4,5,6,7,8,9,10...24周
+# 单日最大查询公司数日期 1,2,3,4,5,6,7,8,9,10...24周
+# 查询最早日期 1...24周
+# 查询最近日期 1...24周
+'''
+时间衍生规则:
+将查询最近日期的每一列与申请日期相减,然后做分箱操作.
+依次类推将其余几个维度的日期也这样子转了
+'''
+# 从查询最早日期开始做起
+# 列名以GDIW0015_W1-24开头
+GDIW0015_cols=[col for col in raw_date_cols_df if col.startswith('GDIW0015_')]
+# 取出查询最早日期的24列数据
+GDIW0015_df=raw_date_cols_df[GDIW0015_cols]
+# 将这24列数据与申请日期相减
+GDIW0015_finall=GDIW0015_df.subtract(apply_time_df,axis=0)
+# 通过后向填充的方式,填充空日期的位置,然后将时间转成float类型
+GDIW0015_fillNa=GDIW0015_finall.bfill().astype('timedelta64[D]')
+# 接着对齐进行分箱,这样就对日期转成分箱列特征了
+filnal_GDIW015_df=GDIW0015_fillNa.apply(lambda x:pd.qcut(x,7,duplicates='drop',labels=False),axis=0)
+
+
+def turn_date_to_bin(row_df,cols_prefix,apply_time_df):
+    date_df_columns = [col for col in row_df if col.startswith(cols_prefix)]
+    # 取出查询最早日期的24列数据
+    date_df = row_df[date_df_columns]
+    # 将这24列数据与申请日期相减
+    date_df_have_NaT = date_df.subtract(apply_time_df, axis=0)
+    # 通过后向填充的方式,填充空日期的位置,然后将时间转成float类型
+    date_df_no_NaT = date_df_have_NaT.bfill().astype('timedelta64[D]')
+    # 接着对齐进行分箱,这样就对日期转成分箱列特征了
+    finaly_date_df = date_df_no_NaT.apply(lambda x: pd.qcut(x, 7, duplicates='drop', labels=False), axis=0)
+
+    return finaly_date_df
+
+# 查询最近日期 1...24周
+# GDIW0016_W
+filnal_GDIW0016_df = turn_date_to_bin(raw_date_cols_df,'GDIW0016_W',apply_time_df)
+
+
+# 最早查询公司名称 1...24周
+# 最近查询公司名称 1...24周
+
+
+'''
+字符类,主要是公司名称
+'''
+
+
+
+
+######################################################################################################################
+
+# 将之前抽取的50个最重要的数值列与刚刚分箱的列拼接,构造成新的数据集进行模型训练
+X=pd.concat([new_numeric_dataset,filnal_GDIW015_df,filnal_GDIW0016_df],axis=1)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
+
+
+######################################      XGBoost抽取Top200         ##############################################
 
 # 将数值类型的数据入模,挑选出重要性比较高的特征top200
-# xgb = XGBClassifier(max_features='sqrt', subsample=0.8, random_state=10)
-# xgb.fit(X_train, y_train)
-
-# print("train score : ", xgb.score(X_train, y_train))
-# print("test score : ", xgb.score(X_test, y_test))
-# print("train ks : ", ks_statistic(y_train, xgb.predict_proba(X_train)[:, 1]))
-# print("test ks : ", ks_statistic(y_test, xgb.predict_proba(X_test)[:, 1]))
-
+xgb = XGBClassifier(max_depth=5,max_features='sqrt', subsample=0.8, random_state=10)
+xgb.fit(X_train, y_train)
+#
+print("train score : ", xgb.score(X_train, y_train))
+print("test score : ", xgb.score(X_test, y_test))
+print("train ks : ", ks_statistic(y_train, xgb.predict_proba(X_train)[:, 1]))
+print("test ks : ", ks_statistic(y_test, xgb.predict_proba(X_test)[:, 1]))
+#
 # 根据xgboost抽取出特征重要性的top200
-# importance = xgb.get_booster().get_score()
-# plot_importance(importance)
-# importance = sorted(importance.items(), key=operator.itemgetter(1), reverse=False)
-# importance = sorted(importance.items(), key=operator.itemgetter(1))
-# df = pd.DataFrame(importance, columns=['feature', 'fscore'])
-###################################################################################################################
+importance = xgb.get_booster().get_score()
+importance = sorted(importance.items(), key=operator.itemgetter(1), reverse=False)
+importance = sorted(importance.items(), key=operator.itemgetter(1))
+df = pd.DataFrame(importance, columns=['feature', 'fscore'])
 
+
+
+
+
+
+
+
+
+
+
+
+
+########################################  最后进行交叉验证,开始调参  #########################################
 # tuning parameters
 # from sklearn.model_selection import GridSearchCV
 # parameters = [{'n_estimators': [10, 100]},
