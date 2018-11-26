@@ -20,7 +20,7 @@ from sklearn.decomposition import PCA  # 主成分分析
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score, roc_curve
+from sklearn.metrics import roc_auc_score, roc_curve, confusion_matrix, classification_report, accuracy_score
 from xgboost import XGBClassifier, XGBModel
 
 warnings.filterwarnings("ignore")
@@ -113,8 +113,11 @@ seed = 7
 test_size = 0.40
 # X_train, X_test, y_train, y_test = train_test_split(raw_numeric_cols_df, Y, test_size=test_size, random_state=seed)
 
-
-
+# 根据xgboost抽取出特征重要性的top200
+# importance = xgb.get_booster().get_score()
+# importance = sorted(importance.items(), key=operator.itemgetter(1), reverse=False)
+# importance = sorted(importance.items(), key=operator.itemgetter(1))
+# df = pd.DataFrame(importance, columns=['feature', 'fscore'])
 
 # 取top10
 # df.nlargest(10,'fscore')
@@ -122,16 +125,15 @@ test_size = 0.40
 # new_numeric_dataset=raw_numeric_cols_df[importance_numeric_columns]
 # 调试过程,将new_numeric_dataset存下来,免得又跑一遍才能得到这个结果
 # new_numeric_dataset.to_pickle('./datas/new_numeric_dataset.pkl')
-new_numeric_dataset=pd.read_pickle('./datas/new_numeric_dataset.pkl')
+new_numeric_dataset = pd.read_pickle('./datas/new_numeric_dataset.pkl')
 # X_train, X_test, y_train, y_test = train_test_split(new_numeric_dataset, Y, test_size=test_size, random_state=seed)
 
 ######################################  衍生变量  ###############################################
 
 # 现在还剩时间类型和字符串类型的特征
-print("#"*100)
+print("#" * 100)
 
-apply_time_df=raw_date_cols_df['apply_time']
-
+apply_time_df = raw_date_cols_df['apply_time']
 
 # 单日最大查询次数日期 1,3,6,12月
 # 单日最大查询公司数日期 1,3,6,12月
@@ -146,18 +148,18 @@ apply_time_df=raw_date_cols_df['apply_time']
 '''
 # 从查询最早日期开始做起
 # 列名以GDIW0015_W1-24开头
-GDIW0015_cols=[col for col in raw_date_cols_df if col.startswith('GDIW0015_')]
+GDIW0015_cols = [col for col in raw_date_cols_df if col.startswith('GDIW0015_')]
 # 取出查询最早日期的24列数据
-GDIW0015_df=raw_date_cols_df[GDIW0015_cols]
+GDIW0015_df = raw_date_cols_df[GDIW0015_cols]
 # 将这24列数据与申请日期相减
-GDIW0015_finall=GDIW0015_df.subtract(apply_time_df,axis=0)
+GDIW0015_finall = GDIW0015_df.subtract(apply_time_df, axis=0)
 # 通过后向填充的方式,填充空日期的位置,然后将时间转成float类型
-GDIW0015_fillNa=GDIW0015_finall.bfill().astype('timedelta64[D]')
+GDIW0015_fillNa = GDIW0015_finall.bfill().astype('timedelta64[D]')
 # 接着对齐进行分箱,这样就对日期转成分箱列特征了
-filnal_GDIW015_df=GDIW0015_fillNa.apply(lambda x:pd.qcut(x,7,duplicates='drop',labels=False),axis=0)
+filnal_GDIW015_df = GDIW0015_fillNa.apply(lambda x: pd.qcut(x, 7, duplicates='drop', labels=False), axis=0)
 
 
-def turn_date_to_bin(row_df,cols_prefix,apply_time_df):
+def turn_date_to_bin(row_df, cols_prefix, apply_time_df):
     date_df_columns = [col for col in row_df if col.startswith(cols_prefix)]
     # 取出查询最早日期的24列数据
     date_df = row_df[date_df_columns]
@@ -170,73 +172,72 @@ def turn_date_to_bin(row_df,cols_prefix,apply_time_df):
 
     return finaly_date_df
 
+
 # 查询最近日期 1...24周
 # GDIW0016_W
-filnal_GDIW0016_df = turn_date_to_bin(raw_date_cols_df,'GDIW0016_W',apply_time_df)
+filnal_GDIW0016_df = turn_date_to_bin(raw_date_cols_df, 'GDIW0016', apply_time_df)
+filnal_GDIM0009_df = turn_date_to_bin(raw_date_cols_df, 'GDIM0009', apply_time_df)  # 单日最大查询次数日期
+filnal_GDIM0010_df = turn_date_to_bin(raw_date_cols_df, 'GDIM0010', apply_time_df)  # 单日最大查询公司数日期
 
-
-# 最早查询公司名称 1...24周
-# 最近查询公司名称 1...24周
-
+# 最早查询公司名称 1...24周 GDIW0020_W
+# 最近查询公司名称 1...24周 GDIW0021_W
 
 '''
 字符类,主要是公司名称
 '''
+# 处理公司名称了
+print("=================================")
 
-
+# obj_df_columns = [col for col in raw_objs_cols_df if col.startswith('GDIW0020_W')]
+# 取出查询最早日期的24列数据
+# GDIW0020_df = raw_objs_cols_df[obj_df_columns]
 
 
 ######################################################################################################################
 
 # 将之前抽取的50个最重要的数值列与刚刚分箱的列拼接,构造成新的数据集进行模型训练
-X=pd.concat([new_numeric_dataset,filnal_GDIW015_df,filnal_GDIW0016_df],axis=1)
+X = pd.concat([new_numeric_dataset, filnal_GDIW015_df, filnal_GDIW0016_df, filnal_GDIM0009_df, filnal_GDIM0010_df],
+              axis=1)
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=test_size, random_state=seed)
-
 
 ######################################      XGBoost抽取Top200         ##############################################
 
 # 将数值类型的数据入模,挑选出重要性比较高的特征top200
-xgb = XGBClassifier(max_depth=5,max_features='sqrt', subsample=0.8, random_state=10)
+xgb = XGBClassifier(max_depth=6, random_state=666)
 xgb.fit(X_train, y_train)
+y_pred = xgb.predict(X_test)
+y_score = xgb.predict_proba(X_test)[:, 1]
+y_train_score = xgb.predict_proba(X_train)[:, 1]
 #
-print("train score : ", xgb.score(X_train, y_train))
-print("test score : ", xgb.score(X_test, y_test))
+print("train accuracy score : ", xgb.score(X_train, y_train))
+print("test accuracy score : ", xgb.score(X_test, y_test))
 print("train ks : ", ks_statistic(y_train, xgb.predict_proba(X_train)[:, 1]))
 print("test ks : ", ks_statistic(y_test, xgb.predict_proba(X_test)[:, 1]))
+print('test auc score :', roc_auc_score(y_test, y_score))
+print('train auc score :', roc_auc_score(y_train, y_train_score))
+
+print(confusion_matrix(y_test, y_pred))
+print(classification_report(y_test, y_pred))
 #
-# 根据xgboost抽取出特征重要性的top200
-importance = xgb.get_booster().get_score()
-importance = sorted(importance.items(), key=operator.itemgetter(1), reverse=False)
-importance = sorted(importance.items(), key=operator.itemgetter(1))
-df = pd.DataFrame(importance, columns=['feature', 'fscore'])
-
-
-
-
-
-
-
-
-
-
 
 
 
 ########################################  最后进行交叉验证,开始调参  #########################################
 # tuning parameters
-# from sklearn.model_selection import GridSearchCV
-# parameters = [{'n_estimators': [10, 100]},
-#               {'learning_rate': [0.1, 0.01, 0.5]}]
-# grid_search = GridSearchCV(estimator = gbm, param_grid = parameters, scoring='accuracy', cv = 3, n_jobs=-1)
-# grid_search = grid_search.fit(train_X, train_y)
-#
-# gbm=XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
-#        colsample_bytree=1, gamma=0, learning_rate=0.5, max_delta_step=0,
-#        max_depth=3, max_features='sqrt', min_child_weight=1, missing=None,
-#        n_estimators=100, n_jobs=1, nthread=None,
-#        objective='binary:logistic', random_state=10, reg_alpha=0,
-#        reg_lambda=1, scale_pos_weight=1, seed=None, silent=True,
-#        subsample=0.8).fit(train_X, train_y)
-# y_pred = gbm.predict(X_test_encode.as_matrix())
-# print(confusion_matrix(y_test, y_pred))
-# print(classification_report(y_test, y_pred))
+from sklearn.model_selection import GridSearchCV
+
+parameters = [{'n_estimators': [10, 100]},
+              {'learning_rate': [0.1, 0.01, 0.5]}]
+grid_search = GridSearchCV(estimator=xgb, param_grid=parameters, scoring='accuracy', cv=3, n_jobs=-1)
+grid_search = grid_search.fit(X_train, y_train)
+
+
+
+# param_test5 = {
+#     'subsample': [i / 100.0 for i in range(75, 90, 5)],
+#     'colsample_bytree': [i / 100.0 for i in range(75, 90, 5)]
+# }
+# gsearch5 = GridSearchCV(estimator=XGBClassifier(learning_rate=0.1, n_estimators=177, max_depth=4,
+#                                                 min_child_weight=6, gamma=0, subsample=0.8, colsample_bytree=0.8,
+#                                                 objective='binary:logistic', nthread=4, scale_pos_weight=1, seed=27),
+#                         param_grid=param_test5, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
