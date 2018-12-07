@@ -35,13 +35,20 @@ y_pred_train = clf.predict(X_train)
 y_pred_test = clf.predict(X_test)
 y_pred_outliers = clf.predict(X_outliers)
 
+print("Accuracy:", list(y_pred_train).count(1)/y_pred_train.shape[0])
+print("Accuracy:", list(y_pred_test).count(1)/y_pred_test.shape[0])
+print("Accuracy:", list(y_pred_outliers).count(-1)/y_pred_outliers.shape[0])
+
+
+
+
 # 作图
 xx, yy = np.meshgrid(np.linspace(-8, 8, 50), np.linspace(-8, 8, 50))
 Z=clf.decision_function(np.c_[xx.ravel(),yy.ravel()])
 Z=Z.reshape(xx.shape)
 
 plt.title('IsolationForest')
-# plt.contourf(xx,yy,Z,cmap=plt.cm.Blues_r)
+plt.contourf(xx,yy,Z,cmap=plt.cm.Blues_r)
 
 b1 = plt.scatter(X_train[:, 0], X_train[:, 1], c='white')
 b2 = plt.scatter(X_test[:, 0], X_test[:, 1], c='green')
@@ -49,8 +56,8 @@ c = plt.scatter(X_outliers[:, 0], X_outliers[:, 1], c='red')
 plt.axis('tight')
 plt.xlim((-8, 8))
 plt.ylim((-8, 8))
-# plt.legend([b1, b2, c],
-#            ["training observations",
-#             "new regular observations", "new abnormal observations"],
-#            loc="upper left")
+plt.legend([b1, b2, c],
+           ["training observations",
+            "new regular observations", "new abnormal observations"],
+           loc="upper left")
 plt.show()
