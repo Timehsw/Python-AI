@@ -8,6 +8,12 @@
 
 ##  创建虚拟环境
 
+```
+pip freeze > requirements.txt
+pip install -r requirements.txt
+```
+
+
 # 项目结构(持续更新中...)
 
 ```
