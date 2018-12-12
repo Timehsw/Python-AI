@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     # $example on$
     # Load the data stored in LIBSVM format as a DataFrame.
-    data = spark.read.format("libsvm").load("data/mllib/sample_libsvm_data.txt")
+    data = spark.read.format("libsvm").load("../data/mllib/sample_libsvm_data.txt")
 
     # Automatically identify categorical features, and index them.
     # We specify maxCategories so features with > 4 distinct values are treated as continuous.
