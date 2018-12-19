@@ -3,11 +3,11 @@
 import sys
 from os import path
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from dataSet.watermelon_2 import wm_attridict, wm_dataset, wm_trainningset, wm_validationset,wm_dataset, wm_picker, wm_counter
+from MLBookCode.dataSet.watermelon_2 import wm_attridict, wm_dataset, wm_trainningset, wm_validationset,wm_dataset, wm_picker, wm_counter
 import numpy as np
 from copy import deepcopy
 from functools import reduce, partial
-from Tree_Module import Tree
+from MLBookCode.DecisionTree.Tree_Module import Tree
 
 wm_attriset = [x for x in wm_attridict if x != '编号']
 def rate_category_func(dataset, label):
