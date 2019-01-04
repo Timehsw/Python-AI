@@ -125,6 +125,13 @@ def basic_df_example(spark):
     # $example off:global_temp_view$
 
 
+def lb(lb):
+    from sklearn.preprocessing import LabelEncoder
+    le = LabelEncoder()
+    le.fit(lb)
+    return [i for i in le.transform(lb)]
+
+
 def schema_inference_example(spark):
     # $example on:schema_inferring$
     sc = spark.sparkContext
@@ -136,6 +143,12 @@ def schema_inference_example(spark):
 
     # Infer the schema, and register the DataFrame as a table.
     schemaPeople = spark.createDataFrame(people)
+
+    schemaPeople.rdd.map(lambda x: [(k, v) for k, v in x.asDict().items()]).map(lambda x: [i for i in x]).flatMap(
+        lambda x: x).groupBy(lambda x: x[0]).map(lambda x: (lb([i[1] for i in x[1]]))).foreach(
+        lambda x: print(x, '==='))
+
+
     schemaPeople.createOrReplaceTempView("people")
 
     # SQL can be run over DataFrames that have been registered as a table.
