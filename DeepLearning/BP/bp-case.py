@@ -34,7 +34,7 @@ sample_in = x.T
 sample_out = y.T
 
 print(sample_in.shape)
-sys.exit()
+# sys.exit()
 # 超参数
 max_epochs = 60000
 learn_rate = 0.035
