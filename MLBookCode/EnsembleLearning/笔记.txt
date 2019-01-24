@@ -1,1 +1,3 @@
-scipy库可以用用root或者fsolve解方程。若是要解出重根需要函数接受numpy.array格式数据
+version https://git-lfs.github.com/spec/v1
+oid sha256:699f6adb63a388f4e3c63dfeb005f9628545c5e7dc437f758c701c59c230730b
+size 110

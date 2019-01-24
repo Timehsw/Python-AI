@@ -1,5 +1,3 @@
-大小便	15	17	身体部位
-心肺	30	31	身体部位
-右下腹	37	39	身体部位
-红肿	70	71	症状和体征
-裂开	73	74	症状和体征
+version https://git-lfs.github.com/spec/v1
+oid sha256:f9183e89794c26c5d5e29192c6a2bcd04e9ab8adddfdba706f5cab58a4edb8f3
+size 147
