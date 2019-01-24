@@ -97,3 +97,4 @@ Projects/ctr_prediction/criteo_data
 data/*
 datas/*
 *.csv
+*.txt
