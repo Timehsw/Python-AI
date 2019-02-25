@@ -11,6 +11,7 @@ import pandas as pd
 
 file = open(r"/Users/hushiwei/IdeaProjects/ConvertLightGBM/src/main/resources/gbm_has_missing.json", "rb")  # 读取模型json文件
 # file = open(r"/Users/hushiwei/IdeaProjects/ConvertLightGBM/src/main/resources/gbm.json", "rb")  # 读取模型json文件
+# file = open(r"/Users/hushiwei/Downloads/model2/model/gbm.json", "rb")  # 读取模型json文件
 model = json.load(file)
 
 feature_names = model['feature_names']  # 获取模型中所用的特征变量
@@ -54,6 +55,7 @@ def predict_gbm(data):
 # 进行测试
 input = "/Users/hushiwei/IdeaProjects/ConvertLightGBM/src/main/resources/test.csv"
 # input = "/Users/hushiwei/IdeaProjects/ConvertLightGBM/src/main/resources/test_woe.csv"
+# input = "/Users/hushiwei/IdeaProjects/ConvertLightGBM/src/main/resources/test_no_missing.csv"
 df = pd.read_csv(input)
 df = df.iloc[:, 1:]
 predict_df = []
