@@ -17,7 +17,7 @@ from importlib import reload
 from matplotlib import pyplot as plt
 import importlib,sys
 importlib.reload(sys)
-from finance_pneumatic_control_LR import scorecard_model_dev_functions as dev_fuc
+from FinanceUtils import scorecard_model_dev_functions_ruiping as dev_fuc
 from sklearn.linear_model import LogisticRegressionCV
 # -*- coding: utf-8 -*-
 
