@@ -1,3 +1,2 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4ce96363e36eb43564dfca31100d36b25bcec48dd7cffb6766e561ad68a1005c
-size 60
+大小便	15	17	身体部位
+心肺腹	27	29	身体部位

@@ -10,7 +10,6 @@ from pyspark.sql import SparkSession
 from pyspark.mllib.linalg import Matrices
 from pyspark.sql import SparkSession
 # $example off:init_session$
-
 # $example on:schema_inferring$
 from pyspark.sql import Row
 # $example off:schema_inferring$
@@ -21,7 +20,6 @@ from pyspark.sql.types import *
 
 
 # $example off:programmatic_schema$
-
 
 def lb(lb):
     from sklearn.preprocessing import LabelEncoder

@@ -1,3 +1,2 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7c66b6c83ecfe66894a9ef044afe2399c9259a88ac0d23a8d250b8f75fdaa8dd
-size 79
+查房时患者不在病房，未留下电话及其它具体联系方式。
+

@@ -1,3 +1,5 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:351e18e79cdefec537a1b0f72905c67b1c1746816a6fc47cc1d5b64e5fce4a08
-size 51
+A,B,C,D
+1,2,3,true
+4,5,6,False
+7,8,9,
+10,11,12,true

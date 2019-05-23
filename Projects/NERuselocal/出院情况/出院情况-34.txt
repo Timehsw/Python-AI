@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0d11eca029c226cac2c9a2c3611a8912ca03283cf6004024d5df85f5a5790cfb
-size 118
+疼痛	7	8	症状和体征
+大小便	24	26	身体部位
+心肺腹	39	41	身体部位
+水肿	77	78	症状和体征

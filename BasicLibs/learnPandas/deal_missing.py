@@ -14,6 +14,7 @@ from sklearn.decomposition import PCA  #主成分分析
 path = '/Users/hushiwei/GEO/数据集/建模数据集/cleand_1416c.csv'
 
 df = pd.read_csv(path)
+df.notnull()
 # print(df.isnull().any())
 
 # 统计每一列缺失值的个数
