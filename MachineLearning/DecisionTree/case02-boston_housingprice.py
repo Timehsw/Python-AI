@@ -22,7 +22,6 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model.coordinate_descent import ConvergenceWarning
 
 
 def notEmpty(s):
@@ -32,7 +31,6 @@ def notEmpty(s):
 mpl.rcParams['font.sans-serif'] = [u'simHei']
 mpl.rcParams['axes.unicode_minus'] = False
 ## 拦截异常
-warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
 warnings.filterwarnings(action='ignore', category=FutureWarning)
 
 names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT']

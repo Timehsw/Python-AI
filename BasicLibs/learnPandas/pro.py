@@ -6,30 +6,25 @@
 '''
 
 import pandas as pd
-from BasicLibs.learnPandas.part2 import part2
+import numpy as np
 
-
-def main():
-    """Main function"""
-
-    """Read in data"""
-    # Read in and clean up data
-    df_messy = pd.read_csv("data/under5mortalityper1000.csv")
-    df_clean = df_messy.dropna(axis=1, how='all').dropna(axis=0, how='all')
-
-    # Remove missing entries
-    df_data = df_clean.dropna(axis=0, how='any')
-
-    # Separate country names and data
-    df_countries = df_data['Country']
-    df_deaths = df_data.drop('Country', axis=1)
+df=pd.DataFrame({
+        'gid':[2,3,1,4,5],
+        'data':range(1,10,2)})
+    
+df=df.set_index('gid')
 
 
 
-    """Part 2"""
-    part2(df_deaths, df_countries)
-
-
-
-if __name__ == "__main__":
-    main()
+print(df)
+print('-'*40)
+df=df.reindex([1,2,3,4,5])
+print(df)
+#df1=pd.DataFrame({
+#        'gid':[1,2,3,4,5],
+#        'data':range(10,20,2)})
+#df1=df1.set_index('gid')
+#print(df1)
+#
+#df['data2']=df1
+#print(df)

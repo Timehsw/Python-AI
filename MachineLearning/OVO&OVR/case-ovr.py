@@ -8,7 +8,7 @@ import numpy as np
 from sklearn import datasets
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import LinearSVC
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score,precision_score
 
 # 加载数据
 iris = datasets.load_iris()
@@ -23,6 +23,7 @@ clf.fit(x, y)
 # 预测结果输出
 print(clf.predict(x))
 print('准确率:%.3f' % accuracy_score(y, clf.predict(x)))
+print('准确率:%.3f' % precision_score(y, clf.predict(x)))
 
 # 模型属性输出
 k = 1

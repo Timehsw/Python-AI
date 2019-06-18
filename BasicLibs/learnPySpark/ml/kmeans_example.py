@@ -34,7 +34,7 @@ from pyspark.sql import SparkSession
 if __name__ == "__main__":
     spark = SparkSession\
         .builder\
-        .appName("KMeansExample")\
+        .appName("KMeansExample").master("local[*]")\
         .getOrCreate()
 
     # $example on$

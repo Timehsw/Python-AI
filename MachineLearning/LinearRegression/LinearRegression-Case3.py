@@ -12,6 +12,7 @@ import warnings
 import sklearn
 
 from sklearn.linear_model import LinearRegression, LassoCV, RidgeCV, ElasticNetCV
+from sklearn.linear_model import LinearRegression,Lasso,Ridge,ElasticNet
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model.coordinate_descent import ConvergenceWarning
