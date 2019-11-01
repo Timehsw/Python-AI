@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
     Created by hushiwei on 2019-08-02
-    Desc : 
+    Desc : 原生xgboot 和 sklearn.xgboost的比较
     Note : 
 '''
 
@@ -68,6 +68,7 @@ model_sklearn = clf.fit(X_train, y_train)
 
 y_bst = model_bst.predict(d_test)
 y_sklearn = clf.predict_proba(X_test)[:, 1]
+clf.predict()
 
 # 第三步：评估结果
 print("XGBoost_自带接口    AUC Score : %f" % metrics.roc_auc_score(y_test, y_bst))
